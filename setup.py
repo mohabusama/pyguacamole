@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 from guacamole import VERSION
 
@@ -20,6 +20,7 @@ setup(
     long_description=README,
     license=LICENSE,
     zip_safe=False,
+    packages=find_packages(exclude=['tests']),
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",

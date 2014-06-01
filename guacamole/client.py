@@ -1,7 +1,8 @@
 """
 The MIT License (MIT)
 
-Copyright (c) 2014 Mohab Usama
+Copyright (c)   2014 rescale
+                2014 Mohab Usama
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +24,6 @@ SOFTWARE.
 """
 
 import socket
-import select
 import logging
 
 from guacamole import logger
@@ -77,6 +77,8 @@ class GuacamoleClient(object):
         if not self._client:
             self._client = socket.create_connection(
                 (self.host, self.port), self.timeout)
+            logger.debug('Client connected with guacd server (%s, %s, %s)'
+                         % (self.host, self.port, self.timeout))
 
         return self._client
 
@@ -87,6 +89,7 @@ class GuacamoleClient(object):
         self.client.close()
         self._client = None
         self.connected = False
+        logger.debug('Connection closed.')
 
     def receive(self):
         """
@@ -100,15 +103,16 @@ class GuacamoleClient(object):
                 # instruction was fully received!
                 line = str(self._buffer[:idx + 1])
                 self._buffer = self._buffer[idx + 1:]
+                logger.debug('Received instruction: %s' % line)
                 return line
             else:
                 start = len(self._buffer)
                 # we are still waiting for instruction termination
-                ready, _, _ = select.select([self.client], [], [])
                 buf = self.client.recv(BUF_LEN)
                 if not buf:
                     # No data recieved, connection lost?!
                     self.close()
+                    logger.debug('Failed to receive instruction. Closing.')
                     return None
                 self._buffer.extend(buf)
 
@@ -116,33 +120,39 @@ class GuacamoleClient(object):
         """
         Send encoded instructions to Guacamole guacd server.
         """
+        logger.debug('Sending data: %s' % data)
         self.client.sendall(data)
 
     def read_instruction(self):
         """
         Read and decode instruction.
         """
+        logger.debug('Reading instruction.')
         return Instruction.load(self.receive())
 
     def send_instruction(self, instruction):
         """
         Send instruction after encoding.
         """
+        logger.debug('Sending instruction: %s' % str(instruction))
         return self.send(instruction.encode())
 
     def handshake(self, protocol='vnc', width=1024, height=768, dpi=96,
-                  audio=(), video=(), **kwargs):
+                  audio=[], video=[], **kwargs):
         """
         Establish connection with Guacamole guacd server via handshake.
         """
         if protocol not in PROTOCOLS:
+            logger.debug('Invalid protocol: %s' % protocol)
             raise GuacamoleError('Cannot start Handshake. Missing protocol.')
 
         # 1. Send 'select' instruction
+        logger.debug('Send `select` instruction.')
         self.send_instruction(Instruction('select', protocol))
 
         # 2. Receive `args` instruction
         instruction = self.read_instruction()
+        logger.debug('Expecting `args` instruction: %s' % str(instruction))
 
         if not instruction:
             raise GuacamoleError(
@@ -154,9 +164,14 @@ class GuacamoleClient(object):
                 'received `%s` instead.' % instruction.opcode)
 
         # 3. Respond with size, audio & video support
+        logger.debug('Send `size` instruction (%s, %s, %s)' % (width, height,
+                                                               dpi))
         self.send_instruction(Instruction('size', width, height, dpi))
 
+        logger.debug('Send `audio` instruction (%s)' % audio)
         self.send_instruction(Instruction('audio', *audio))
+
+        logger.debug('Send `video` instruction (%s)' % video)
         self.send_instruction(Instruction('video', *video))
 
         # 4. Send `connect` instruction with proper values
@@ -164,6 +179,8 @@ class GuacamoleClient(object):
             kwargs.get(arg.replace('-', '_'), '') for arg in instruction.args
         ]
 
+        logger.debug('Send `connect` instruction (%s)' % connection_args)
         self.send_instruction(Instruction('connect', *connection_args))
 
+        logger.debug('Handshake completed.')
         self.connected = True
