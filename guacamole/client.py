@@ -27,6 +27,7 @@ import socket
 import logging
 
 from guacamole import logger as guac_logger
+
 from exceptions import GuacamoleError
 
 from instruction import INST_TERM
