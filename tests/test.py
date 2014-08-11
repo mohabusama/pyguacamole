@@ -73,7 +73,6 @@ class GuacamoleClientTest(TestCase):
         """
         Test invalid handshake.
         """
-
         with self.assertRaises(GuacamoleError):
             self.client.handshake(protocol='invalid')
 
@@ -121,7 +120,7 @@ class GuacamoleClientTest(TestCase):
             self.client.handshake(protocol='rdp')
 
 
-class GuacamoleInstuctionTest(TestCase):
+class GuacamoleInstructionTest(TestCase):
 
     def setUp(self):
         self.u_arg = u'مهاب'
@@ -132,11 +131,11 @@ class GuacamoleInstuctionTest(TestCase):
         """
         Test valid instruction encoding.
         """
-        instruction_str = '4.args,8.hostname,4.port;'
+        instruction_str = '4.args,8.hostname,4.port,4.1984;'
         instruction_opcode = 'args'
-        instruction_args = ('hostname', 'port')
+        instruction_args = ('hostname', 'port', 1984)
 
-        instruction = Instruction('args', 'hostname', 'port')
+        instruction = Instruction('args', 'hostname', 'port', 1984)
 
         self.assertEqual(instruction_str, instruction.encode())
         self.assertEqual(instruction_opcode, instruction.opcode)
@@ -146,10 +145,10 @@ class GuacamoleInstuctionTest(TestCase):
         """
         Test valid instruction decoding.
         """
-        instruction_str = '4.args,8.hostname,4.port;'
+        instruction_str = '4.args,8.hostname,4.port,4.1984;'
 
         instruction_opcode = 'args'
-        instruction_args = ('hostname', 'port')
+        instruction_args = ('hostname', 'port', '1984')
 
         instruction = Instruction.load(instruction_str)
 
@@ -204,7 +203,8 @@ class GuacamoleInstuctionTest(TestCase):
         Test valid instruction encoding with arg containing
         protocol characters.
         """
-        arg_protocol_chars = 'p,.;t'
+        # arg includes ARG_SEP, ELEM_SEP, INST_TERM and a white space.
+        arg_protocol_chars = 'p,.; t'
         instruction_str = '4.args,8.hostname,%s.%s;' %\
             (len(arg_protocol_chars), arg_protocol_chars)
 
