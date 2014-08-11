@@ -58,9 +58,11 @@ class GuacamoleInstruction(object):
     @classmethod
     def load(cls, instruction):
         """
-        Loads a new Instruction from encoded instruction.
+        Loads a new GuacamoleInstruction from encoded instruction string.
 
-        :return: Instruction()
+        :param instruction: Instruction string.
+
+        :return: GuacamoleInstruction()
         """
         if not instruction.endswith(INST_TERM):
             raise InvalidInstruction('Instruction termination not found.')
@@ -72,13 +74,15 @@ class GuacamoleInstruction(object):
     @staticmethod
     def decode_instruction(instruction):
         """
-        Decode whole Instruction and return list of args.
+        Decode whole instruction and return list of args.
         Usually, returned arg[0] is the instruction opcode.
 
         example:
         >> args = decode_instruction('4.size,4.1024;')
         >> args == ['size', '1024']
         >> True
+
+        :param instruction: Instruction string.
 
         :return: list
         """
@@ -126,12 +130,14 @@ class GuacamoleInstruction(object):
     @staticmethod
     def encode_arg(arg):
         """
-        Encode argument to be sent in a valid Guacamole instruction.
+        Encode argument to be sent in a valid GuacamoleInstruction.
 
         example:
         >> arg = encode_arg('size')
         >> arg == '4.size'
         >> True
+
+        :param arg: arg string.
 
         :return: str
         """
