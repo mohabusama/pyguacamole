@@ -21,6 +21,8 @@ setup(
     license=LICENSE,
     zip_safe=False,
     packages=find_packages(exclude=['tests']),
+    test_require=['nose', 'mock'],
+    test_suite='nose.collector',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
