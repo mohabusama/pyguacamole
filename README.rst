@@ -63,4 +63,4 @@ and once instruction is sent from browser, it should be sent immediately to guac
 Notes
 =====
 
-PyGuacamole is released under the `MIT License <https://raw.githubusercontent.com/mohabusama/pyguacamole/master/LICENSE>`_ and is based on the initial effort by Rescale [django-guacamole](https://github.com/rescale/django-guacamole) project.
+PyGuacamole is released under the `MIT License <https://raw.githubusercontent.com/mohabusama/pyguacamole/master/LICENSE>`_ and is based on the initial effort by Rescale `django-guacamole <https://github.com/rescale/django-guacamole>`_ project.
