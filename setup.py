@@ -3,13 +3,6 @@ from setuptools import setup, find_packages
 from guacamole import VERSION
 
 
-with open('README.rst') as f:
-    README = f.read()
-
-with open('LICENSE') as f:
-    LICENSE = f.read()
-
-
 setup(
     name='pyguacamole',
     version=VERSION,
@@ -17,8 +10,8 @@ setup(
     author='Mohab Usama',
     author_email='mohab.usama@gmail.com',
     description=('A Guacamole python client library.'),
-    long_description=README,
-    license=LICENSE,
+    long_description=open('README.rst').read(),
+    license=open('LICENSE').read(),
     zip_safe=False,
     packages=find_packages(exclude=['tests']),
     tests_require=['nose', 'mock'],

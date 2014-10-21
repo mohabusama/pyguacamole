@@ -5,4 +5,6 @@ python:
 install: 'pip install -r dev_requirements.txt'
 # command to run tests
 script:
+  - 'pep8 guacamole tests'
+  - 'pyflakes guacamole tests'
   - 'python setup.py test'
