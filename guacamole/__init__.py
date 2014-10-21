@@ -25,7 +25,7 @@ SOFTWARE.
 import logging
 
 
-VERSION = '0.2'
+VERSION = '0.3'
 
 
 logger = logging.getLogger(__name__)
