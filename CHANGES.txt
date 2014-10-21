@@ -1,0 +1,13 @@
+=====================
+PyGuacamole changelog
+=====================
+
+
+0.2 (2014-10-22)
+----------------
+
+- More robust instruction parsing.
+- Unicode support.
+- More unit tests.
+- Moved encode_arg & decode_instruction as @staticmethod.
+- Added README.rst.
