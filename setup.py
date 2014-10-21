@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 from guacamole import VERSION
 
 
-with open('README.md') as f:
+with open('README.rst') as f:
     README = f.read()
 
 with open('LICENSE') as f:
