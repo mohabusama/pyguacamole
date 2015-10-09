@@ -2,7 +2,7 @@
 The MIT License (MIT)
 
 Copyright (c)   2014 rescale
-                2014 Mohab Usama
+                2014 - 2015 Mohab Usama
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,10 +28,10 @@ import logging
 
 from guacamole import logger as guac_logger
 
-from exceptions import GuacamoleError
+from guacamole.exceptions import GuacamoleError
 
-from instruction import INST_TERM
-from instruction import GuacamoleInstruction as Instruction
+from guacamole.instruction import INST_TERM
+from guacamole.instruction import GuacamoleInstruction as Instruction
 
 # supported protocols
 PROTOCOLS = ('vnc', 'rdp', 'ssh')

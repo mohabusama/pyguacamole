@@ -2,7 +2,7 @@
 The MIT License (MIT)
 
 Copyright (c)   2014 rescale
-                2014 Mohab Usama
+                2014 - 2015 Mohab Usama
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,7 @@ SOFTWARE.
 
 import itertools
 
-from exceptions import InvalidInstruction
+from guacamole.exceptions import InvalidInstruction
 
 
 INST_TERM = ';'  # instruction terminator character
