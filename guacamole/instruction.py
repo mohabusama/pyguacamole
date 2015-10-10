@@ -22,8 +22,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-
 import itertools
+import six
+
+from builtins import str as __unicode__
 
 from guacamole.exceptions import InvalidInstruction
 
@@ -43,7 +45,7 @@ def utf8(unicode_str):
 
     :return: str
     """
-    if isinstance(unicode_str, unicode):
+    if six.PY2 and isinstance(unicode_str, __unicode__):
         return unicode_str.encode('utf-8')
 
     return unicode_str

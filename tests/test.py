@@ -24,6 +24,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+import six
+
 from mock import MagicMock
 from unittest import TestCase
 
@@ -124,7 +126,7 @@ class GuacamoleInstructionTest(TestCase):
 
     def setUp(self):
         self.u_arg = u'مهاب'
-        self.u_arg_utf8 = self.u_arg.encode('utf-8')
+        self.u_arg_utf8 = self.u_arg.encode('utf-8') if six.PY2 else self.u_arg
         self.u_arg_len = len(self.u_arg_utf8)
 
     def test_instruction_valid_encode(self):
