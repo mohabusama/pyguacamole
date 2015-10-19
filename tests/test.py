@@ -40,6 +40,7 @@ class GuacamoleClientTest(TestCase):
         self.client = GuacamoleClient('127.0.0.1', 4822)
         # patch `send`
         self.client.send = MagicMock()
+        self.client.close = MagicMock()
 
     def test_handshake(self):
         """
@@ -47,6 +48,8 @@ class GuacamoleClientTest(TestCase):
         """
         global step
         step = 0
+
+        client_id = '$260d01da-779b-4ee9-afc1-c16bae885cc7'
 
         def mock_send_instruction_handshake(instruction):
             global step
@@ -65,11 +68,15 @@ class GuacamoleClientTest(TestCase):
             side_effect=mock_send_instruction_handshake)
         # successful `args` response for `select` instruction
         self.client.receive = MagicMock(
-            side_effect=['4.args,8.hostname,4.port,6.domain,8.username;'])
+            side_effect=[
+                '4.args,8.hostname,4.port,6.domain,8.username;',
+                '5.ready,37.%s;' % client_id
+            ])
 
         self.client.handshake(protocol='rdp')
 
         self.assertTrue(self.client.connected)
+        self.assertEqual(self.client.id, client_id)
 
     def test_handshake_invalid_protocol(self):
         """

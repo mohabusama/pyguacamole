@@ -67,6 +67,9 @@ class GuacamoleClient(object):
         # Receiving buffer
         self._buffer = bytearray()
 
+        # Client ID
+        self._id = None
+
         self.logger = guac_logger
         if logger:
             self.logger = logger
@@ -86,6 +89,10 @@ class GuacamoleClient(object):
                               % (self.host, self.port, self.timeout))
 
         return self._client
+
+    @property
+    def id(self):
+        return self._id
 
     def close(self):
         """
@@ -162,10 +169,12 @@ class GuacamoleClient(object):
                           % str(instruction))
 
         if not instruction:
+            self.close()
             raise GuacamoleError(
                 'Cannot establish Handshake. Connection Lost!')
 
         if instruction.opcode != 'args':
+            self.close()
             raise GuacamoleError(
                 'Cannot establish Handshake. Expected opcode `args`, '
                 'received `%s` instead.' % instruction.opcode)
@@ -188,6 +197,20 @@ class GuacamoleClient(object):
 
         self.logger.debug('Send `connect` instruction (%s)' % connection_args)
         self.send_instruction(Instruction('connect', *connection_args))
+
+        # 5. Receive ``ready`` instruction, with client ID.
+        instruction = self.read_instruction()
+        self.logger.debug('Expecting `ready` instruction, received: %s'
+                          % str(instruction))
+
+        if instruction.opcode != 'ready':
+            self.logger.warning(
+                'Expected `ready` instruction, received: %s instead')
+
+        if instruction.args:
+            self._id = instruction.args[0]
+            self.logger.debug(
+                'Established connection with client id: %s' % self.id)
 
         self.logger.debug('Handshake completed.')
         self.connected = True
