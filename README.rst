@@ -11,7 +11,7 @@ A Python client library for communication with `Guacamole <http://guac-dev.org/>
    :target: https://python.org/pypi/pyguacamole/
 
 .. image:: https://img.shields.io/pypi/pyversions/pyguacamole.svg
-   :target: https://github.com/mohabusama/pyguacamole
+   :target: https://python.org/pypi/pyguacamole/
 
 .. image:: https://img.shields.io/pypi/dm/pyguacamole.svg
    :target: https://python.org/pypi/pyguacamole/
