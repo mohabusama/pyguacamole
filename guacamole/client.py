@@ -42,6 +42,8 @@ BUF_LEN = 4096
 
 
 class GuacamoleClient(object):
+    """Guacamole Client class."""
+
     def __init__(self, host, port, timeout=20, debug=False, logger=None):
         """
         Guacamole Client class. This class can handle communication with guacd
@@ -92,6 +94,7 @@ class GuacamoleClient(object):
 
     @property
     def id(self):
+        """Return client id"""
         return self._id
 
     def close(self):
@@ -105,7 +108,7 @@ class GuacamoleClient(object):
 
     def receive(self):
         """
-        Receives instructions from Guacamole guacd server.
+        Receive instructions from Guacamole guacd server.
         """
         start = 0
 
@@ -151,13 +154,22 @@ class GuacamoleClient(object):
         return self.send(instruction.encode())
 
     def handshake(self, protocol='vnc', width=1024, height=768, dpi=96,
-                  audio=[], video=[], image=[], **kwargs):
+                  audio=None, video=None, image=None, **kwargs):
         """
         Establish connection with Guacamole guacd server via handshake.
         """
         if protocol not in PROTOCOLS:
             self.logger.debug('Invalid protocol: %s' % protocol)
             raise GuacamoleError('Cannot start Handshake. Missing protocol.')
+
+        if audio is None:
+            audio = list()
+
+        if video is None:
+            video = list()
+
+        if image is None:
+            image = list()
 
         # 1. Send 'select' instruction
         self.logger.debug('Send `select` instruction.')

@@ -51,17 +51,13 @@ class GuacamoleClientTest(TestCase):
 
         client_id = '$260d01da-779b-4ee9-afc1-c16bae885cc7'
 
+        expected = ['select', 'size', 'audio', 'video', 'image', 'connect']
+
         def mock_send_instruction_handshake(instruction):
             global step
-            if step == 0:
-                assert instruction.opcode == 'select'
-                step += 1
-            elif step == 1:
-                assert instruction.opcode == 'size'
-                step += 1
-            elif step == 4:
-                assert instruction.opcode == 'connect'
-                step += 1
+            assert instruction.opcode == expected[step]
+
+            step += 1
 
         # mock and vaidate send_instruction in handshake
         self.client.send_instruction = MagicMock(
