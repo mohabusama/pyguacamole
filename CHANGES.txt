@@ -2,13 +2,13 @@
 PyGuacamole changelog
 =====================
 
-0.4 (2016-03-17)
+0.6 (2016-03-17)
 ----------------
 
 - Tested with Guacamole 0.9.9
 - Fix missing `image` instruction in handshake (by Robin Gohmert @Ayuto)
 - Harden handshake test.
-
+- Update license.
 
 0.3 (2015-10-21)
 ----------------
