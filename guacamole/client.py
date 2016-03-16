@@ -151,7 +151,7 @@ class GuacamoleClient(object):
         return self.send(instruction.encode())
 
     def handshake(self, protocol='vnc', width=1024, height=768, dpi=96,
-                  audio=[], video=[], **kwargs):
+                  audio=[], video=[], image=[], **kwargs):
         """
         Establish connection with Guacamole guacd server via handshake.
         """
@@ -189,6 +189,9 @@ class GuacamoleClient(object):
 
         self.logger.debug('Send `video` instruction (%s)' % video)
         self.send_instruction(Instruction('video', *video))
+
+        self.logger.debug('Send `image` instruction (%s)' % image)
+        self.send_instruction(Instruction('image', *image))
 
         # 4. Send `connect` instruction with proper values
         connection_args = [
