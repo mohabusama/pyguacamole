@@ -4,7 +4,7 @@ python:
 sudo: false
 # command to install dependencies
 install:
-  - pip install tox
+  - pip install tox tox-travis
 # command to run tests
 script:
   - tox
