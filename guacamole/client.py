@@ -95,10 +95,10 @@ class GuacamoleClient(object):
         start = 0
 
         while True:
-            idx = self._buffer.find(INST_TERM, start)
+            idx = self._buffer.find(INST_TERM.encode(), start)
             if idx != -1:
                 # instruction was fully received!
-                line = str(self._buffer[:idx + 1])
+                line = self._buffer[:idx + 1].decode()
                 self._buffer = self._buffer[idx + 1:]
                 self.logger.debug('Received instruction: %s' % line)
                 return line
@@ -119,7 +119,7 @@ class GuacamoleClient(object):
         Send encoded instructions to Guacamole guacd server.
         """
         self.logger.debug('Sending data: %s' % data)
-        self.client.sendall(data)
+        self.client.sendall(data.encode())
 
     def read_instruction(self):
         """
