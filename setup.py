@@ -1,3 +1,5 @@
+import io
+
 from setuptools import setup, find_packages
 
 from guacamole import VERSION
@@ -14,10 +16,9 @@ setup(
     version=VERSION,
     url='https://github.com/mohabusama/pyguacamole',
     author='Mohab Usama',
-    author_email='mohab.usama@gmail.com',
     description=('A Guacamole python client library.'),
-    long_description=open('README.rst').read(),
-    license=open('LICENSE').read(),
+    long_description=io.open('README.rst', encoding='utf-8').read(),
+    license='The MIT License (MIT)',
     zip_safe=False,
     packages=find_packages(exclude=['tests']),
     install_requires=install_requires,
