@@ -99,7 +99,7 @@ class GuacamoleInstruction(object):
 
         try:
             arg_size = int(elems[0])
-        except:
+        except Exception:
             # Expected ValueError
             raise InvalidInstruction(
                 'Invalid arg length.' +
