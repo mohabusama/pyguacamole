@@ -56,9 +56,42 @@ class GuacamoleClientTest(TestCase):
         self.assertTrue(self.client.connected)
         self.assertEqual(self.client.id, client_id)
 
+    def test_handshake_with_connectionid(self):
+        """
+        Test successful handshake with existing connectionid
+        """
+        global step
+        step = 0
+
+        client_id = '$260d01da-779b-4ee9-afc1-c16bae885cc7'
+        connection_id = '$260d01da-779b-4ee9-afc1-c16bae885cc7'
+
+        expected = ['select', 'size', 'audio', 'video', 'image', 'connect']
+
+        def mock_send_instruction_handshake(instruction):
+            global step
+            assert instruction.opcode == expected[step]
+
+            step += 1
+
+        # mock and vaidate send_instruction in handshake
+        self.client.send_instruction = MagicMock(
+            side_effect=mock_send_instruction_handshake)
+        # successful `args` response for `select` instruction
+        self.client.receive = MagicMock(
+            side_effect=[
+                '4.args,8.hostname,4.port,6.domain,8.username;',
+                '5.ready,37.%s;' % client_id
+            ])
+
+        self.client.handshake(connectionids=connection_id)
+
+        self.assertTrue(self.client.connected)
+        self.assertEqual(self.client.id, connection_id)
+
     def test_handshake_invalid_protocol(self):
         """
-        Test invalid handshake.
+        Test invalid handshake (invalid protocol and no connectionid in kwargs)
         """
         with self.assertRaises(GuacamoleError):
             self.client.handshake(protocol='invalid')
