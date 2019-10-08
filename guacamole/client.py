@@ -160,7 +160,7 @@ class GuacamoleClient(object):
         self.logger.debug('Send `select` instruction.')
 
         # if connectionid is provided - connect to existing connectionid
-        if ('connectionid' in kwargs):
+        if 'connectionid' in kwargs:
             self.send_instruction(Instruction('select',
                                               kwargs.get('connectionid')))
         else:
