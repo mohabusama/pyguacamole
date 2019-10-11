@@ -139,10 +139,13 @@ class GuacamoleClient(object):
                   audio=None, video=None, image=None, **kwargs):
         """
         Establish connection with Guacamole guacd server via handshake.
+
         """
-        if protocol not in PROTOCOLS:
-            self.logger.debug('Invalid protocol: %s' % protocol)
-            raise GuacamoleError('Cannot start Handshake. Missing protocol.')
+        if protocol not in PROTOCOLS and 'connectionid' not in kwargs:
+            self.logger.debug('Invalid protocol: %s '
+                              'and no connectionid provided' % protocol)
+            raise GuacamoleError('Cannot start Handshake. '
+                                 'Missing protocol or connectionid.')
 
         if audio is None:
             audio = list()
@@ -155,7 +158,13 @@ class GuacamoleClient(object):
 
         # 1. Send 'select' instruction
         self.logger.debug('Send `select` instruction.')
-        self.send_instruction(Instruction('select', protocol))
+
+        # if connectionid is provided - connect to existing connectionid
+        if 'connectionid' in kwargs:
+            self.send_instruction(Instruction('select',
+                                              kwargs.get('connectionid')))
+        else:
+            self.send_instruction(Instruction('select', protocol))
 
         # 2. Receive `args` instruction
         instruction = self.read_instruction()
