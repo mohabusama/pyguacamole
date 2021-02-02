@@ -69,8 +69,8 @@ class GuacamoleClient(object):
         if not self._client:
             self._client = socket.create_connection(
                 (self.host, self.port), self.timeout)
-            self.logger.debug('Client connected with guacd server (%s, %s, %s)'
-                              % (self.host, self.port, self.timeout))
+            self.logger.info('Client connected with guacd server (%s, %s, %s)'
+                             % (self.host, self.port, self.timeout))
 
         return self._client
 
@@ -86,7 +86,7 @@ class GuacamoleClient(object):
         self.client.close()
         self._client = None
         self.connected = False
-        self.logger.debug('Connection closed.')
+        self.logger.info('Connection closed.')
 
     def receive(self):
         """
@@ -109,7 +109,7 @@ class GuacamoleClient(object):
                 if not buf:
                     # No data recieved, connection lost?!
                     self.close()
-                    self.logger.debug(
+                    self.logger.warn(
                         'Failed to receive instruction. Closing.')
                     return None
                 self._buffer.extend(buf)
@@ -142,8 +142,8 @@ class GuacamoleClient(object):
 
         """
         if protocol not in PROTOCOLS and 'connectionid' not in kwargs:
-            self.logger.debug('Invalid protocol: %s '
-                              'and no connectionid provided' % protocol)
+            self.logger.error(
+                'Invalid protocol: %s and no connectionid provided' % protocol)
             raise GuacamoleError('Cannot start Handshake. '
                                  'Missing protocol or connectionid.')
 
