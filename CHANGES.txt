@@ -2,7 +2,7 @@
 PyGuacamole changelog
 =====================
 
-0.10 (2020-02-05)
+0.10 (2021-02-05)
 ----------------
 
 - Bump log levels (by Maari @mrtmm)
