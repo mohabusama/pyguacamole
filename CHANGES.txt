@@ -2,6 +2,12 @@
 PyGuacamole changelog
 =====================
 
+0.10 (2020-02-05)
+----------------
+
+- Bump log levels (by Maari @mrtmm)
+- Build process: add github actions and support 3.9 (by Florian @fghaas)
+
 0.9 (2019-10-11)
 ----------------
 
