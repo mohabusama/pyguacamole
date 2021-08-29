@@ -2,6 +2,11 @@
 PyGuacamole changelog
 =====================
 
+0.11 (2021-08-29)
+----------------
+
+- Add support for device display size overrides (by Richard @richlanc)
+
 0.10 (2021-02-05)
 ----------------
 

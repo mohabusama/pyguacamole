@@ -7,7 +7,7 @@ Copyright (c) 2014 - 2016 Mohab Usama
 import logging
 
 
-VERSION = '0.10'
+VERSION = '0.11'
 
 
 logger = logging.getLogger(__name__)
