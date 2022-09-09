@@ -16,7 +16,7 @@ from guacamole.instruction import INST_TERM
 from guacamole.instruction import GuacamoleInstruction as Instruction
 
 # supported protocols
-PROTOCOLS = ('vnc', 'rdp', 'ssh')
+PROTOCOLS = ('vnc', 'rdp', 'ssh', 'telnet', 'kubernetes')
 
 PROTOCOL_NAME = 'guacamole'
 
