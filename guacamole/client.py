@@ -109,9 +109,10 @@ class GuacamoleClient(object):
                 if not buf:
                     # No data recieved, connection lost?!
                     self.close()
-                    self.logger.warn(
-                        'Failed to receive instruction. Closing.')
-                    return None
+                    msg = 'Connection closed by remote server'
+                    self.logger.warn(msg)
+                    raise GuacamoleError(msg)
+
                 self._buffer.extend(buf)
 
     def send(self, data):
