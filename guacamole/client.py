@@ -118,7 +118,7 @@ class GuacamoleClient(object):
         Send encoded instructions to Guacamole guacd server.
         """
         self.logger.debug('Sending data: %s' % data)
-        await self._writer.write(data.encode())
+        self._writer.write(data.encode())
 
     def read_instruction(self):
         """
