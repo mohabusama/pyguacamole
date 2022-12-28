@@ -82,7 +82,7 @@ class GuacamoleClient(object):
         Terminate connection with Guacamole guacd server.
         """
         self._writer.close()
-        await self._writer.wait_closed()
+        self._writer.wait_closed()
         self.connected = False
         self.logger.info('Connection closed.')
 
