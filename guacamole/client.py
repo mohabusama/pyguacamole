@@ -183,6 +183,7 @@ class GuacamoleClient(object):
             raise GuacamoleError(
                 'Cannot establish Handshake. Expected opcode `args`, '
                 'received `%s` instead.' % instruction.opcode)
+        self.logger.debug(f"ARGS: {instruction}")
 
         # 3. Respond with size, audio & video support
         self.logger.debug('Send `size` instruction (%s, %s, %s)'
@@ -198,6 +199,10 @@ class GuacamoleClient(object):
         self.logger.debug('Send `image` instruction (%s)' % image)
         self.send_instruction(Instruction('image', *image))
 
+        if timezone := kwargs.get("timezone", None):
+            self.logger.debug('Send `timezone` instruction (%s)' % timezone)
+            self.send_instruction(Instruction('timezone', timezone))
+
         if width_override:
             kwargs["width"] = width_override
         if height_override:
@@ -206,21 +211,20 @@ class GuacamoleClient(object):
             kwargs["dpi"] = dpi_override
 
         # 4. Send `connect` instruction with proper values
+        self.logger.debug(instruction.args)
         connection_args = [
             kwargs.get(arg.replace('-', '_'), '') for arg in instruction.args
         ]
 
-        self.logger.debug('Send `connect` instruction (%s)' % connection_args)
+        self.logger.debug(f'Send `connect` instruction ({connection_args}')
         self.send_instruction(Instruction('connect', *connection_args))
 
         # 5. Receive ``ready`` instruction, with client ID.
         instruction = self.read_instruction()
-        self.logger.debug('Expecting `ready` instruction, received: %s'
-                          % str(instruction))
+        self.logger.debug(f'Expecting `ready` instruction, received: {instruction}')
 
         if instruction.opcode != 'ready':
-            self.logger.warning(
-                'Expected `ready` instruction, received: %s instead')
+            self.logger.warning(f'Expected `ready` instruction, received: {instruction} instead')
 
         if instruction.args:
             self._id = instruction.args[0]
