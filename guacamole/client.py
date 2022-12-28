@@ -4,8 +4,7 @@ The MIT License (MIT)
 Copyright (c)   2014 rescale
                 2014 - 2016 Mohab Usama
 """
-
-import socket
+import asyncio
 import logging
 
 from guacamole import logger as guac_logger
@@ -43,7 +42,8 @@ class GuacamoleClient(object):
         self.port = port
         self.timeout = timeout
 
-        self._client = None
+        self._reader = None
+        self._writer = None
 
         # handshake established?
         self.connected = False
@@ -66,13 +66,11 @@ class GuacamoleClient(object):
         """
         Socket connection.
         """
-        if not self._client:
-            self._client = socket.create_connection(
-                (self.host, self.port), self.timeout)
-            self.logger.info('Client connected with guacd server (%s, %s, %s)'
-                             % (self.host, self.port, self.timeout))
+        if not self._reader and self._writer:
+            self._reader, self._writer = asyncio.open_connection(self.host, self.port)
+            self.logger.info(f'Client connected with guacd server {self.host} {self.port} {self.timeout}')
 
-        return self._client
+        return True
 
     @property
     def id(self):
@@ -83,12 +81,12 @@ class GuacamoleClient(object):
         """
         Terminate connection with Guacamole guacd server.
         """
-        self.client.close()
-        self._client = None
+        self._writer.close()
+        await self._writer.wait_closed()
         self.connected = False
         self.logger.info('Connection closed.')
 
-    def receive(self):
+    async def receive(self):
         """
         Receive instructions from Guacamole guacd server.
         """
@@ -105,7 +103,7 @@ class GuacamoleClient(object):
             else:
                 start = len(self._buffer)
                 # we are still waiting for instruction termination
-                buf = self.client.recv(BUF_LEN)
+                buf = await self._reader.read(BUF_LEN)
                 if not buf:
                     # No data recieved, connection lost?!
                     self.close()
@@ -120,7 +118,7 @@ class GuacamoleClient(object):
         Send encoded instructions to Guacamole guacd server.
         """
         self.logger.debug('Sending data: %s' % data)
-        self.client.sendall(data.encode())
+        await self._writer.write(data.encode())
 
     def read_instruction(self):
         """
