@@ -68,7 +68,7 @@ class GuacamoleClient(object):
         """
         if not self._reader and self._writer:
             self._reader, self._writer = asyncio.open_connection(self.host, self.port)
-            self.logger.info(f'Client connected with guacd server {self.host} {self.port} {self.timeout}')
+            #self.logger.info(f'Client connected with guacd server {self.host} {self.port} {self.timeout}')
 
         return True
 
@@ -84,7 +84,7 @@ class GuacamoleClient(object):
         self._writer.close()
         self._writer.wait_closed()
         self.connected = False
-        self.logger.info('Connection closed.')
+        #self.logger.info('Connection closed.')
 
     async def receive(self):
         """
@@ -98,7 +98,7 @@ class GuacamoleClient(object):
                 # instruction was fully received!
                 line = self._buffer[:idx + 1].decode()
                 self._buffer = self._buffer[idx + 1:]
-                self.logger.debug('Received instruction: %s' % line)
+                # self.logger.debug('Received instruction: %s' % line)
                 return line
             else:
                 start = len(self._buffer)
@@ -113,28 +113,28 @@ class GuacamoleClient(object):
 
                 self._buffer.extend(buf)
 
-    def send(self, data):
+    async def send(self, data):
         """
         Send encoded instructions to Guacamole guacd server.
         """
-        self.logger.debug('Sending data: %s' % data)
+        #self.logger.debug('Sending data: %s' % data)
         self._writer.write(data.encode())
 
-    def read_instruction(self):
+    async def read_instruction(self):
         """
         Read and decode instruction.
         """
-        self.logger.debug('Reading instruction.')
+        #self.logger.debug('Reading instruction.')
         return Instruction.load(self.receive())
 
-    def send_instruction(self, instruction):
+    async def send_instruction(self, instruction):
         """
         Send instruction after encoding.
         """
-        self.logger.debug('Sending instruction: %s' % str(instruction))
-        return self.send(instruction.encode())
+        #self.logger.debug('Sending instruction: %s' % str(instruction))
+        return await self.send(instruction.encode())
 
-    def handshake(self, protocol='vnc', width=1024, height=768, dpi=96,
+    async def handshake(self, protocol='vnc', width=1024, height=768, dpi=96,
                   audio=None, video=None, image=None, width_override=None,
                   height_override=None, dpi_override=None, **kwargs):
         """
@@ -157,19 +157,18 @@ class GuacamoleClient(object):
             image = list()
 
         # 1. Send 'select' instruction
-        self.logger.debug('Send `select` instruction.')
+        #self.logger.debug('Send `select` instruction.')
 
         # if connectionid is provided - connect to existing connectionid
         if 'connectionid' in kwargs:
-            self.send_instruction(Instruction('select',
-                                              kwargs.get('connectionid')))
+            await self.send_instruction(Instruction('select', kwargs.get('connectionid')))
         else:
-            self.send_instruction(Instruction('select', protocol))
+            await self.send_instruction(Instruction('select', protocol))
 
         # 2. Receive `args` instruction
-        instruction = self.read_instruction()
-        self.logger.debug('Expecting `args` instruction, received: %s'
-                          % str(instruction))
+        instruction = await self.read_instruction()
+        #self.logger.debug('Expecting `args` instruction, received: %s'
+        #                  % str(instruction))
 
         if not instruction:
             self.close()
@@ -181,25 +180,24 @@ class GuacamoleClient(object):
             raise GuacamoleError(
                 'Cannot establish Handshake. Expected opcode `args`, '
                 'received `%s` instead.' % instruction.opcode)
-        self.logger.debug(f"ARGS: {instruction}")
+        #self.logger.debug(f"ARGS: {instruction}")
 
         # 3. Respond with size, audio & video support
-        self.logger.debug('Send `size` instruction (%s, %s, %s)'
-                          % (width, height, dpi))
-        self.send_instruction(Instruction('size', width, height, dpi))
+        #self.logger.debug('Send `size` instruction {width} {height} {dpi}')
+        await self.send_instruction(Instruction('size', width, height, dpi))
 
-        self.logger.debug('Send `audio` instruction (%s)' % audio)
-        self.send_instruction(Instruction('audio', *audio))
+        #self.logger.debug('Send `audio` instruction (%s)' % audio)
+        await self.send_instruction(Instruction('audio', *audio))
 
         self.logger.debug('Send `video` instruction (%s)' % video)
-        self.send_instruction(Instruction('video', *video))
+        await self.send_instruction(Instruction('video', *video))
 
         self.logger.debug('Send `image` instruction (%s)' % image)
-        self.send_instruction(Instruction('image', *image))
+        await self.send_instruction(Instruction('image', *image))
 
         if timezone := kwargs.get("timezone", None):
-            self.logger.debug('Send `timezone` instruction (%s)' % timezone)
-            self.send_instruction(Instruction('timezone', timezone))
+            #self.logger.debug('Send `timezone` instruction (%s)' % timezone)
+            await self.send_instruction(Instruction('timezone', timezone))
 
         if width_override:
             kwargs["width"] = width_override
@@ -209,25 +207,22 @@ class GuacamoleClient(object):
             kwargs["dpi"] = dpi_override
 
         # 4. Send `connect` instruction with proper values
-        self.logger.debug(instruction.args)
+        #self.logger.debug(instruction.args)
         connection_args = [
             kwargs.get(arg.replace('-', '_'), '') for arg in instruction.args
         ]
 
-        self.logger.debug(f'Send `connect` instruction ({connection_args}')
-        self.send_instruction(Instruction('connect', *connection_args))
+        #self.logger.debug(f'Send `connect` instruction ({connection_args}')
+        await self.send_instruction(Instruction('connect', *connection_args))
 
         # 5. Receive ``ready`` instruction, with client ID.
-        instruction = self.read_instruction()
-        self.logger.debug(f'Expecting `ready` instruction, received: {instruction}')
+        instruction = await self.read_instruction()
 
-        if instruction.opcode != 'ready':
-            self.logger.warning(f'Expected `ready` instruction, received: {instruction} instead')
+        #if instruction.opcode != 'ready':
+        #   self.logger.warning(f'Expected `ready` instruction, received: {instruction} instead')
 
         if instruction.args:
             self._id = instruction.args[0]
-            self.logger.debug(
-                'Established connection with client id: %s' % self.id)
-
-        self.logger.debug('Handshake completed.')
+            #self.logger.debug('Established connection with client id: {self.id}')
+        #self.logger.debug('Handshake completed.')
         self.connected = True
