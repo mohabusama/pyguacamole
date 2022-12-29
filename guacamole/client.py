@@ -121,13 +121,14 @@ class GuacamoleClient(object):
         """
         #self.logger.debug('Sending data: %s' % data)
         self._writer.write(data.encode())
+        await self._writer.drain()
 
     async def read_instruction(self):
         """
         Read and decode instruction.
         """
         #self.logger.debug('Reading instruction.')
-        return Instruction.load(self.receive())
+        return Instruction.load(await self.receive())
 
     async def send_instruction(self, instruction):
         """
